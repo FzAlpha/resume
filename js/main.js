@@ -60,6 +60,26 @@ document.addEventListener('DOMContentLoaded', () => {
       mouse.y = null;
     });
 
+    // Touch support for Mobile and Tablet
+    window.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches.length > 0) {
+        mouse.x = e.touches[0].clientX;
+        mouse.y = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchstart', (e) => {
+      if (e.touches && e.touches.length > 0) {
+        mouse.x = e.touches[0].clientX;
+        mouse.y = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+      mouse.x = null;
+      mouse.y = null;
+    });
+
     let isDark = htmlRoot.getAttribute('data-theme') !== 'light';
     let nodeColor = isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(20, 20, 30, 0.55)';
     let lineColor = isDark ? 'rgba(255, 255, 255, ' : 'rgba(20, 20, 30, ';
