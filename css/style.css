@@ -569,18 +569,19 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: floatGeometric 6s ease-in-out infinite alternate;
+  animation: floatGeometric 4.5s ease-in-out infinite alternate;
 }
 
 /* Soft ambient glow behind polygon */
 .polygon-glow-layer {
   position: absolute;
-  width: 90%;
-  height: 90%;
+  width: 95%;
+  height: 95%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(230, 43, 43, 0.25) 0%, rgba(230, 43, 43, 0.05) 50%, transparent 75%);
-  filter: blur(20px);
+  background: radial-gradient(circle, rgba(230, 43, 43, 0.32) 0%, rgba(230, 43, 43, 0.08) 50%, transparent 75%);
+  filter: blur(22px);
   z-index: 1;
+  animation: pulseGlow 4s ease-in-out infinite alternate;
 }
 
 /* Organic Geometric Faceted Polygon Card */
@@ -1341,7 +1342,12 @@ img {
 
 @keyframes floatGeometric {
   0% { transform: translateY(0px) rotate(0deg); }
-  100% { transform: translateY(-12px) rotate(1.5deg); }
+  100% { transform: translateY(-16px) rotate(1.8deg); }
+}
+
+@keyframes pulseGlow {
+  0% { opacity: 0.6; transform: scale(0.96); }
+  100% { opacity: 1; transform: scale(1.04); }
 }
 
 @keyframes rotateSlow {

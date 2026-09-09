@@ -81,27 +81,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     let isDark = htmlRoot.getAttribute('data-theme') !== 'light';
-    let nodeColor = isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(20, 20, 30, 0.55)';
+    let nodeColor = isDark ? 'rgba(255, 255, 255, 0.75)' : 'rgba(20, 20, 30, 0.6)';
     let lineColor = isDark ? 'rgba(255, 255, 255, ' : 'rgba(20, 20, 30, ';
-    let triColor = isDark ? 'rgba(255, 255, 255, 0.015)' : 'rgba(20, 20, 30, 0.012)';
+    let triColor = isDark ? 'rgba(255, 255, 255, 0.025)' : 'rgba(20, 20, 30, 0.02)';
 
     window.updatePlexusTheme = (theme) => {
       isDark = theme !== 'light';
-      nodeColor = isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(20, 20, 30, 0.55)';
+      nodeColor = isDark ? 'rgba(255, 255, 255, 0.75)' : 'rgba(20, 20, 30, 0.6)';
       lineColor = isDark ? 'rgba(255, 255, 255, ' : 'rgba(20, 20, 30, ';
-      triColor = isDark ? 'rgba(255, 255, 255, 0.015)' : 'rgba(20, 20, 30, 0.012)';
+      triColor = isDark ? 'rgba(255, 255, 255, 0.025)' : 'rgba(20, 20, 30, 0.02)';
     };
 
-    const particleCount = Math.min(Math.floor((window.innerWidth * window.innerHeight) / 12000), 85);
+    const particleCount = Math.min(Math.floor((window.innerWidth * window.innerHeight) / 9500), 115);
     const particles = [];
 
     class PlexusParticle {
       constructor() {
         this.x = Math.random() * width;
         this.y = Math.random() * height;
-        this.vx = (Math.random() - 0.5) * 0.55;
-        this.vy = (Math.random() - 0.5) * 0.55;
-        this.radius = Math.random() * 1.5 + 1.0;
+        this.vx = (Math.random() - 0.5) * 0.75;
+        this.vy = (Math.random() - 0.5) * 0.75;
+        this.radius = Math.random() * 1.6 + 1.1;
       }
 
       update() {
@@ -119,8 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < mouse.radius) {
             const force = (mouse.radius - dist) / mouse.radius;
-            this.x -= (dx / dist) * force * 1.5;
-            this.y -= (dy / dist) * force * 1.5;
+            this.x -= (dx / dist) * force * 1.8;
+            this.y -= (dy / dist) * force * 1.8;
           }
         }
       }
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderPlexus() {
       ctx.clearRect(0, 0, width, height);
 
-      const maxDist = 135;
+      const maxDist = 148;
 
       // Draw Triangles and Connecting Lines
       for (let i = 0; i < particles.length; i++) {
@@ -153,12 +153,12 @@ document.addEventListener('DOMContentLoaded', () => {
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < maxDist) {
-            const alpha = (1 - dist / maxDist) * 0.16;
+            const alpha = (1 - dist / maxDist) * 0.22;
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(p2.x, p2.y);
             ctx.strokeStyle = `${lineColor}${alpha})`;
-            ctx.lineWidth = 0.75;
+            ctx.lineWidth = 0.85;
             ctx.stroke();
 
             // Find third particle for triangulated wireframe mesh
@@ -185,13 +185,13 @@ document.addEventListener('DOMContentLoaded', () => {
           const mdx = p1.x - mouse.x;
           const mdy = p1.y - mouse.y;
           const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
-          if (mDist < maxDist * 1.1) {
-            const mAlpha = (1 - mDist / (maxDist * 1.1)) * 0.22;
+          if (mDist < maxDist * 1.2) {
+            const mAlpha = (1 - mDist / (maxDist * 1.2)) * 0.32;
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(mouse.x, mouse.y);
             ctx.strokeStyle = `rgba(230, 43, 43, ${mAlpha})`;
-            ctx.lineWidth = 0.85;
+            ctx.lineWidth = 1.0;
             ctx.stroke();
           }
         }
