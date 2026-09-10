@@ -32,6 +32,9 @@
 
 <body class="theme-dark">
 
+  <!-- WhatsApp-Style Developer Doodle Wallpaper Imprint -->
+  <div class="bg-doodle-imprint" id="bg-doodle-imprint" aria-hidden="true"></div>
+
   <!-- Interactive Plexus 3D Constellation Mesh Canvas -->
   <canvas id="plexus-canvas" class="plexus-canvas"></canvas>
 
@@ -470,7 +473,7 @@
               <span class="dot yellow"></span>
               <span class="dot green"></span>
             </div>
-            <span class="term-title">fzalpha@archlinux: ~ (interactive shell)</span>
+            <span class="term-title">fzalpha ~ zsh (starship)</span>
             <span class="term-hint">Type 'help'</span>
           </div>
 
@@ -488,14 +491,27 @@
               </pre>
               <p>Type <span class="highlight-crimson">help</span> to view available commands (<span
                   class="code-sub">about</span>, <span class="code-sub">skills</span>, <span
-                  class="code-sub">projects</span>, <span class="code-sub">specs</span>, <span
-                  class="code-sub">contact</span>, <span class="code-sub">clear</span>).</p>
+                  class="code-sub">projects</span>, <span class="code-sub">contact</span>, <span
+                  class="code-sub">github</span>, <span class="code-sub">clear</span>).</p>
             </div>
             <div id="terminal-history"></div>
-            <div class="term-input-line">
-              <span class="term-prompt">fzalpha@portfolio:~$</span>
-              <input type="text" id="terminal-input" class="term-input" autocomplete="off" spellcheck="false"
-                aria-label="Terminal command input">
+            <div class="term-active-block">
+              <div class="term-prompt-header">
+                <span class="term-pill pill-timer">
+                  <svg class="pill-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"></circle><polyline points="12 6.5 12 12 15 14"></polyline></svg>
+                  <span class="pill-text">0s</span>
+                </span>
+                <span class="term-pill pill-dir">
+                  <svg class="pill-icon" viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+                  <span class="pill-arrow">→</span>
+                  <svg class="pill-icon" viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                </span>
+              </div>
+              <div class="term-input-line">
+                <span class="term-arrow-symbols"><span class="term-sym-dot">●</span> <span class="term-sym-arrow">▶</span></span>
+                <input type="text" id="terminal-input" class="term-input" autocomplete="off" spellcheck="false"
+                  aria-label="Terminal command input" placeholder="type a command...">
+              </div>
             </div>
           </div>
         </div>

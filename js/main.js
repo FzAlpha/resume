@@ -81,15 +81,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     let isDark = htmlRoot.getAttribute('data-theme') !== 'light';
-    let nodeColor = isDark ? 'rgba(255, 255, 255, 0.75)' : 'rgba(30, 35, 55, 0.55)';
-    let lineColor = isDark ? 'rgba(255, 255, 255, ' : 'rgba(30, 35, 55, ';
-    let triColor = isDark ? 'rgba(255, 255, 255, 0.025)' : 'rgba(30, 35, 55, 0.025)';
+    let nodeColor = isDark ? 'rgba(255, 255, 255, 0.75)' : 'rgba(37, 99, 235, 0.75)';
+    let lineColor = isDark ? 'rgba(255, 255, 255, ' : 'rgba(37, 99, 235, ';
+    let triColor = isDark ? 'rgba(255, 255, 255, 0.025)' : 'rgba(37, 99, 235, 0.04)';
 
     window.updatePlexusTheme = (theme) => {
       isDark = theme !== 'light';
-      nodeColor = isDark ? 'rgba(255, 255, 255, 0.75)' : 'rgba(30, 35, 55, 0.55)';
-      lineColor = isDark ? 'rgba(255, 255, 255, ' : 'rgba(30, 35, 55, ';
-      triColor = isDark ? 'rgba(255, 255, 255, 0.025)' : 'rgba(30, 35, 55, 0.025)';
+      nodeColor = isDark ? 'rgba(255, 255, 255, 0.75)' : 'rgba(37, 99, 235, 0.75)';
+      lineColor = isDark ? 'rgba(255, 255, 255, ' : 'rgba(37, 99, 235, ';
+      triColor = isDark ? 'rgba(255, 255, 255, 0.025)' : 'rgba(37, 99, 235, 0.04)';
     };
 
     const particleCount = Math.min(Math.floor((window.innerWidth * window.innerHeight) / 9500), 115);
@@ -317,13 +317,35 @@ document.addEventListener('DOMContentLoaded', () => {
   const termScreen = document.getElementById('terminal-screen');
 
   if (termInput && termHistory) {
+    const historyStack = [];
+    let historyIdx = -1;
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function createPromptPillHtml(execTime = '0s') {
+      return `
+        <div class="term-prompt-header">
+          <span class="term-pill pill-timer">
+            <svg class="pill-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"></circle><polyline points="12 6.5 12 12 15 14"></polyline></svg>
+            <span class="pill-text">${execTime}</span>
+          </span>
+          <span class="term-pill pill-dir">
+            <svg class="pill-icon" viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+            <span class="pill-arrow">→</span>
+            <svg class="pill-icon" viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          </span>
+        </div>
+      `;
+    }
+
     const termCommands = {
       help: () => `
 <span class="code-sub">Commands Available:</span>
   <span class="highlight-crimson">about</span>      - Personal summary & background
   <span class="highlight-crimson">skills</span>     - Technical competencies & stack
   <span class="highlight-crimson">projects</span>   - Featured GitHub repositories & links
-  <span class="highlight-crimson">specs</span>      - Workstation & Linux environment details
   <span class="highlight-crimson">contact</span>    - Direct email & social handles
   <span class="highlight-crimson">github</span>     - Open GitHub profile
   <span class="highlight-crimson">clear</span>      - Clear terminal screen
@@ -345,15 +367,6 @@ document.addEventListener('DOMContentLoaded', () => {
 3. <a href="https://github.com/FzAlpha/algo-vault" target="_blank" class="highlight-crimson">algo-vault</a> - 150+ optimal DSA solutions
 4. <a href="https://github.com/FzAlpha" target="_blank" class="highlight-crimson">Multi-Agent AI Platform</a> - Parallel task automation
 `,
-      specs: () => `
-<span class="term-prompt">fzalpha@archlinux</span>
------------------
-OS: Arch Linux x86_64
-WM: Hyprland (Wayland)
-Editor: Neovim (Lua configs)
-Shell: custom-linux-shell / zsh
-Focus: C++20, Algorithms & OS Internals
-`,
       contact: () => `
 Email: <a href="mailto:hritabratabardhan13579@gmail.com" class="highlight-crimson">hritabratabardhan13579@gmail.com</a>
 LinkedIn: <a href="https://www.linkedin.com/in/hritabrata-bardhan-12b498365/" target="_blank" class="highlight-crimson">Hritabrata Bardhan</a>
@@ -370,6 +383,12 @@ Discord: <span class="highlight-crimson">fz_alpha_1</span>
       }
     };
 
+    if (termScreen) {
+      termScreen.addEventListener('click', () => {
+        termInput.focus();
+      });
+    }
+
     termInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         const raw = termInput.value.trim();
@@ -377,6 +396,9 @@ Discord: <span class="highlight-crimson">fz_alpha_1</span>
         termInput.value = '';
 
         if (!raw) return;
+
+        historyStack.push(raw);
+        historyIdx = historyStack.length;
 
         const row = document.createElement('div');
         row.className = 'term-row';
@@ -387,17 +409,49 @@ Discord: <span class="highlight-crimson">fz_alpha_1</span>
           if (out === null) return;
           res = out;
         } else {
-          res = `<div>Command not found: '${raw}'. Type <span class="highlight-crimson">help</span> to view commands.</div>`;
+          res = `<div>Command not found: '${escapeHtml(raw)}'. Type <span class="highlight-crimson">help</span> to view commands.</div>`;
         }
 
         row.innerHTML = `
-          <div><span class="term-prompt">fzalpha@portfolio:~$</span> <span class="term-echo">${raw}</span></div>
-          <div>${res}</div>
+          ${createPromptPillHtml('0s')}
+          <div class="term-prompt-line">
+            <span class="term-arrow-symbols"><span class="term-sym-dot">●</span> <span class="term-sym-arrow">▶</span></span>
+            <span class="term-echo">${escapeHtml(raw)}</span>
+          </div>
+          <div class="term-output">${res}</div>
         `;
 
         termHistory.appendChild(row);
         if (termScreen) {
           termScreen.scrollTop = termScreen.scrollHeight;
+        }
+      } else if (e.key === 'ArrowUp') {
+        if (historyStack.length > 0 && historyIdx > 0) {
+          historyIdx--;
+          termInput.value = historyStack[historyIdx];
+          setTimeout(() => {
+            termInput.selectionStart = termInput.selectionEnd = termInput.value.length;
+          }, 0);
+        }
+        e.preventDefault();
+      } else if (e.key === 'ArrowDown') {
+        if (historyStack.length > 0 && historyIdx < historyStack.length - 1) {
+          historyIdx++;
+          termInput.value = historyStack[historyIdx];
+        } else {
+          historyIdx = historyStack.length;
+          termInput.value = '';
+        }
+        e.preventDefault();
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        const current = termInput.value.trim().toLowerCase();
+        if (current) {
+          const validCmds = Object.keys(termCommands);
+          const match = validCmds.find(c => c.startsWith(current));
+          if (match) {
+            termInput.value = match;
+          }
         }
       }
     });
