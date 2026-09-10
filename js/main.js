@@ -81,15 +81,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     let isDark = htmlRoot.getAttribute('data-theme') !== 'light';
-    let nodeColor = isDark ? 'rgba(255, 255, 255, 0.75)' : 'rgba(20, 20, 30, 0.6)';
-    let lineColor = isDark ? 'rgba(255, 255, 255, ' : 'rgba(20, 20, 30, ';
-    let triColor = isDark ? 'rgba(255, 255, 255, 0.025)' : 'rgba(20, 20, 30, 0.02)';
+    let nodeColor = isDark ? 'rgba(255, 255, 255, 0.75)' : 'rgba(30, 35, 55, 0.55)';
+    let lineColor = isDark ? 'rgba(255, 255, 255, ' : 'rgba(30, 35, 55, ';
+    let triColor = isDark ? 'rgba(255, 255, 255, 0.025)' : 'rgba(30, 35, 55, 0.025)';
 
     window.updatePlexusTheme = (theme) => {
       isDark = theme !== 'light';
-      nodeColor = isDark ? 'rgba(255, 255, 255, 0.75)' : 'rgba(20, 20, 30, 0.6)';
-      lineColor = isDark ? 'rgba(255, 255, 255, ' : 'rgba(20, 20, 30, ';
-      triColor = isDark ? 'rgba(255, 255, 255, 0.025)' : 'rgba(20, 20, 30, 0.02)';
+      nodeColor = isDark ? 'rgba(255, 255, 255, 0.75)' : 'rgba(30, 35, 55, 0.55)';
+      lineColor = isDark ? 'rgba(255, 255, 255, ' : 'rgba(30, 35, 55, ';
+      triColor = isDark ? 'rgba(255, 255, 255, 0.025)' : 'rgba(30, 35, 55, 0.025)';
     };
 
     const particleCount = Math.min(Math.floor((window.innerWidth * window.innerHeight) / 9500), 115);
