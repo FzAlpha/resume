@@ -250,31 +250,77 @@ document.addEventListener('DOMContentLoaded', () => {
   runTypewriter();
 
   // =========================================================================
-  // 4. SCROLLSPY & ACTIVE LINK UNDERLINE
+  // 4. SCROLLSPY & SMOOTH MAGNETIC PILL INDICATOR
   // =========================================================================
+  const navTrack = document.getElementById('nav-pill-track');
+  const navActivePill = document.getElementById('nav-active-pill');
   const navItems = document.querySelectorAll('.nav-item');
   const sections = document.querySelectorAll('section[id]');
+  let currentActiveNav = null;
 
-  function onScroll() {
-    const scrollPos = window.scrollY + 140;
+  function moveIndicator(targetItem) {
+    if (!navActivePill || !targetItem || !navTrack) return;
+    const trackRect = navTrack.getBoundingClientRect();
+    const itemRect = targetItem.getBoundingClientRect();
+
+    const left = itemRect.left - trackRect.left;
+    const width = itemRect.width;
+
+    navActivePill.style.width = `${width}px`;
+    navActivePill.style.transform = `translateX(${left}px)`;
+    navActivePill.style.opacity = '1';
+  }
+
+  function getActiveSection() {
+    let currentId = 'home';
+    const scrollPos = window.scrollY + 160;
 
     sections.forEach((sec) => {
       const top = sec.offsetTop;
       const height = sec.offsetHeight;
-      const id = sec.getAttribute('id');
-
       if (scrollPos >= top && scrollPos < top + height) {
-        navItems.forEach((item) => {
-          item.classList.remove('active');
-          if (item.getAttribute('data-nav') === id) {
-            item.classList.add('active');
-          }
-        });
+        currentId = sec.getAttribute('id');
+      }
+    });
+    return currentId;
+  }
+
+  function onScroll() {
+    const activeId = getActiveSection();
+
+    navItems.forEach((item) => {
+      if (item.getAttribute('data-nav') === activeId) {
+        item.classList.add('active');
+        currentActiveNav = item;
+      } else {
+        item.classList.remove('active');
+      }
+    });
+
+    if (currentActiveNav) {
+      moveIndicator(currentActiveNav);
+    }
+  }
+
+  // Smooth hover preview on pill track
+  navItems.forEach((item) => {
+    item.addEventListener('mouseenter', () => {
+      moveIndicator(item);
+    });
+  });
+
+  if (navTrack) {
+    navTrack.addEventListener('mouseleave', () => {
+      if (currentActiveNav) {
+        moveIndicator(currentActiveNav);
       }
     });
   }
+
   window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+  window.addEventListener('resize', onScroll);
+  setTimeout(onScroll, 50);
+  window.addEventListener('load', onScroll);
 
   // =========================================================================
   // 5. ANIMATED STATS COUNTER
