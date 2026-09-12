@@ -1,8 +1,8 @@
 /**
  * HRITABRATA BARDHAN - MINIMALIST BLACK & CRIMSON PORTFOLIO ENGINE
- * Includes: Interactive Plexus Mesh Canvas, Typewriter Engine,
- * Theme Switcher (Dark/Light), Scrollspy, Interactive Terminal,
- * Copy Triggers, and Modal Controllers.
+ * Includes: Interactive Plexus Mesh Canvas (Retina & Mobile Optimized),
+ * Typewriter Engine, Theme Switcher (Dark/Light), Scrollspy with RAF throttling,
+ * Interactive Terminal, Toast Notifications, Copy Triggers, and Modal/Drawer Controllers.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -35,20 +35,28 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // =========================================================================
-  // 2. INTERACTIVE PLEXUS 3D CONSTELLATION NETWORK CANVAS
+  // 2. INTERACTIVE PLEXUS 3D CONSTELLATION NETWORK CANVAS (MOBILE & HIGH-DPI OPTIMIZED)
   // =========================================================================
   const canvas = document.getElementById('plexus-canvas');
   if (canvas) {
     const ctx = canvas.getContext('2d');
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    let dpr = window.devicePixelRatio || 1;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
 
-    let mouse = { x: null, y: null, radius: 160 };
+    function resizeCanvas() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2); // Cap at 2 for mobile battery efficiency
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx.scale(dpr, dpr);
+    }
+    resizeCanvas();
 
-    window.addEventListener('resize', () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    });
+    let mouse = { x: null, y: null, radius: 140 };
+
+    window.addEventListener('resize', resizeCanvas);
 
     window.addEventListener('mousemove', (e) => {
       mouse.x = e.clientX;
@@ -60,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
       mouse.y = null;
     });
 
-    // Touch support for Mobile and Tablet
+    // Touch support for Mobile and Tablet (with passive listeners for 60fps scrolling)
     window.addEventListener('touchmove', (e) => {
       if (e.touches && e.touches.length > 0) {
         mouse.x = e.touches[0].clientX;
@@ -78,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('touchend', () => {
       mouse.x = null;
       mouse.y = null;
-    });
+    }, { passive: true });
 
     let isDark = htmlRoot.getAttribute('data-theme') !== 'light';
     let nodeColor = isDark ? 'rgba(255, 255, 255, 0.75)' : 'rgba(37, 99, 235, 0.75)';
@@ -92,16 +100,21 @@ document.addEventListener('DOMContentLoaded', () => {
       triColor = isDark ? 'rgba(255, 255, 255, 0.025)' : 'rgba(37, 99, 235, 0.04)';
     };
 
-    const particleCount = Math.min(Math.floor((window.innerWidth * window.innerHeight) / 9500), 115);
+    // Mobile adaptive particle count
+    const isMobile = window.innerWidth < 768;
+    const particleCount = isMobile
+      ? Math.min(Math.floor((width * height) / 18000), 38)
+      : Math.min(Math.floor((width * height) / 9500), 115);
+
     const particles = [];
 
     class PlexusParticle {
       constructor() {
         this.x = Math.random() * width;
         this.y = Math.random() * height;
-        this.vx = (Math.random() - 0.5) * 0.75;
-        this.vy = (Math.random() - 0.5) * 0.75;
-        this.radius = Math.random() * 1.6 + 1.1;
+        this.vx = (Math.random() - 0.5) * 0.7;
+        this.vy = (Math.random() - 0.5) * 0.7;
+        this.radius = Math.random() * 1.5 + 1.0;
       }
 
       update() {
@@ -119,8 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < mouse.radius) {
             const force = (mouse.radius - dist) / mouse.radius;
-            this.x -= (dx / dist) * force * 1.8;
-            this.y -= (dy / dist) * force * 1.8;
+            this.x -= (dx / dist) * force * 1.6;
+            this.y -= (dy / dist) * force * 1.6;
           }
         }
       }
@@ -140,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderPlexus() {
       ctx.clearRect(0, 0, width, height);
 
-      const maxDist = 148;
+      const maxDist = isMobile ? 120 : 148;
 
       // Draw Triangles and Connecting Lines
       for (let i = 0; i < particles.length; i++) {
@@ -161,26 +174,28 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.lineWidth = 0.85;
             ctx.stroke();
 
-            // Find third particle for triangulated wireframe mesh
-            for (let k = j + 1; k < particles.length; k++) {
-              const p3 = particles[k];
-              const d2 = Math.sqrt((p1.x - p3.x) ** 2 + (p1.y - p3.y) ** 2);
-              const d3 = Math.sqrt((p2.x - p3.x) ** 2 + (p2.y - p3.y) ** 2);
+            // Find third particle for triangulated wireframe mesh (desktop/tablets only for performance)
+            if (!isMobile) {
+              for (let k = j + 1; k < particles.length; k++) {
+                const p3 = particles[k];
+                const d2 = Math.sqrt((p1.x - p3.x) ** 2 + (p1.y - p3.y) ** 2);
+                const d3 = Math.sqrt((p2.x - p3.x) ** 2 + (p2.y - p3.y) ** 2);
 
-              if (d2 < maxDist * 0.85 && d3 < maxDist * 0.85) {
-                ctx.beginPath();
-                ctx.moveTo(p1.x, p1.y);
-                ctx.lineTo(p2.x, p2.y);
-                ctx.lineTo(p3.x, p3.y);
-                ctx.closePath();
-                ctx.fillStyle = triColor;
-                ctx.fill();
+                if (d2 < maxDist * 0.85 && d3 < maxDist * 0.85) {
+                  ctx.beginPath();
+                  ctx.moveTo(p1.x, p1.y);
+                  ctx.lineTo(p2.x, p2.y);
+                  ctx.lineTo(p3.x, p3.y);
+                  ctx.closePath();
+                  ctx.fillStyle = triColor;
+                  ctx.fill();
+                }
               }
             }
           }
         }
 
-        // Connect particles to mouse
+        // Connect particles to mouse / touch
         if (mouse.x !== null && mouse.y !== null) {
           const mdx = p1.x - mouse.x;
           const mdy = p1.y - mouse.y;
@@ -190,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(mouse.x, mouse.y);
-            ctx.strokeStyle = `rgba(230, 43, 43, ${mAlpha})`;
+            ctx.strokeStyle = `rgba(37, 99, 235, ${mAlpha})`;
             ctx.lineWidth = 1.0;
             ctx.stroke();
           }
@@ -250,18 +265,23 @@ document.addEventListener('DOMContentLoaded', () => {
   runTypewriter();
 
   // =========================================================================
-  // 4. SCROLLSPY & SMOOTH MAGNETIC PILL INDICATOR
+  // 4. SCROLLSPY & SMOOTH MAGNETIC PILL INDICATOR (RAF THROTTLED)
   // =========================================================================
   const navTrack = document.getElementById('nav-pill-track');
   const navActivePill = document.getElementById('nav-active-pill');
   const navItems = document.querySelectorAll('.nav-item');
   const sections = document.querySelectorAll('section[id]');
   let currentActiveNav = null;
+  let ticking = false;
 
   function moveIndicator(targetItem) {
     if (!navActivePill || !targetItem || !navTrack) return;
+    if (window.innerWidth <= 832) return; // Hidden on mobile nav switch
+
     const trackRect = navTrack.getBoundingClientRect();
     const itemRect = targetItem.getBoundingClientRect();
+
+    if (itemRect.width === 0) return;
 
     const left = itemRect.left - trackRect.left;
     const width = itemRect.width;
@@ -285,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return currentId;
   }
 
-  function onScroll() {
+  function updateNav() {
     const activeId = getActiveSection();
 
     navItems.forEach((item) => {
@@ -299,6 +319,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (currentActiveNav) {
       moveIndicator(currentActiveNav);
+    }
+    ticking = false;
+  }
+
+  function onScroll() {
+    if (!ticking) {
+      requestAnimationFrame(updateNav);
+      ticking = true;
     }
   }
 
@@ -350,7 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         }
       },
-      { threshold: 0.25 }
+      { threshold: 0.2 }
     );
     statObserver.observe(aboutSection);
   }
@@ -401,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
 • Computer Science Engineering Student
 • Low-level systems programming in C++ / POSIX
 • Operating system internals & custom Linux terminal shells
-• 150+ LeetCode & algorithmic challenges solved
+• 200+ LeetCode & algorithmic challenges solved
 `,
       skills: () => `
 <span class="code-sub">Languages:</span> C++, C, Python, Java, Bash, Lua, JavaScript, HTML/CSS
@@ -410,7 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
       projects: () => `
 1. <a href="https://github.com/FzAlpha/log-Manager" target="_blank" class="highlight-crimson">log-Manager</a> - C++ telemetry & DSA tracker
 2. <a href="https://github.com/FzAlpha/custom-linux-shell" target="_blank" class="highlight-crimson">custom-linux-shell</a> - Custom Linux terminal with process piping & syscalls
-3. <a href="https://github.com/FzAlpha/algo-vault" target="_blank" class="highlight-crimson">algo-vault</a> - 150+ optimal DSA solutions
+3. <a href="https://github.com/FzAlpha/algo-vault" target="_blank" class="highlight-crimson">algo-vault</a> - 200+ optimal DSA solutions
 4. <a href="https://github.com/FzAlpha" target="_blank" class="highlight-crimson">Multi-Agent AI Platform</a> - Parallel task automation
 `,
       contact: () => `
@@ -516,7 +544,8 @@ Discord: <span class="highlight-crimson">fz_alpha_1</span>
 
     setTimeout(() => {
       t.style.opacity = '0';
-      t.style.transition = 'opacity 0.3s ease';
+      t.style.transform = 'translateY(1rem)';
+      t.style.transition = 'all 0.3s ease';
       setTimeout(() => t.remove(), 300);
     }, 3000);
   }
@@ -527,8 +556,9 @@ Discord: <span class="highlight-crimson">fz_alpha_1</span>
       const val = btn.getAttribute('data-copy');
       if (val) {
         navigator.clipboard.writeText(val).then(() => {
+          const originalText = btn.textContent;
           btn.textContent = 'Copied!';
-          setTimeout(() => (btn.textContent = 'Copy'), 2000);
+          setTimeout(() => (btn.textContent = originalText), 2000);
           showToast(`Copied "${val}" to clipboard!`);
         });
       }
@@ -561,7 +591,7 @@ Discord: <span class="highlight-crimson">fz_alpha_1</span>
   }
 
   // =========================================================================
-  // 9. RESUME MODAL CONTROLLER
+  // 9. RESUME MODAL CONTROLLER (WITH MOBILE SCROLL LOCK)
   // =========================================================================
   const resumeModal = document.getElementById('resume-modal');
   const openResumeBtns = [
@@ -575,14 +605,16 @@ Discord: <span class="highlight-crimson">fz_alpha_1</span>
   function openCV() {
     if (resumeModal) {
       resumeModal.classList.add('open');
-      document.body.style.overflow = 'hidden';
+      document.body.classList.add('scroll-locked');
     }
   }
 
   function closeCV() {
     if (resumeModal) {
       resumeModal.classList.remove('open');
-      document.body.style.overflow = '';
+      if (!mobileDrawer || !mobileDrawer.classList.contains('open')) {
+        document.body.classList.remove('scroll-locked');
+      }
     }
   }
 
@@ -602,7 +634,7 @@ Discord: <span class="highlight-crimson">fz_alpha_1</span>
   }
 
   // =========================================================================
-  // 10. MOBILE DRAWER NAVIGATION
+  // 10. MOBILE DRAWER NAVIGATION (WITH MOBILE SCROLL LOCK)
   // =========================================================================
   const mobileToggle = document.getElementById('mobile-toggle');
   const mobileDrawer = document.getElementById('mobile-drawer');
@@ -613,13 +645,15 @@ Discord: <span class="highlight-crimson">fz_alpha_1</span>
   function openDrawer() {
     if (mobileDrawer) mobileDrawer.classList.add('open');
     if (drawerOverlay) drawerOverlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    document.body.classList.add('scroll-locked');
   }
 
   function closeDrawer() {
     if (mobileDrawer) mobileDrawer.classList.remove('open');
     if (drawerOverlay) drawerOverlay.classList.remove('active');
-    document.body.style.overflow = '';
+    if (!resumeModal || !resumeModal.classList.contains('open')) {
+      document.body.classList.remove('scroll-locked');
+    }
   }
 
   if (mobileToggle) mobileToggle.addEventListener('click', openDrawer);
