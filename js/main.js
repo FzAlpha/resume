@@ -667,4 +667,81 @@ Discord: <span class="highlight-crimson">fz_alpha_1</span>
       closeDrawer();
     }
   });
+
+  // =========================================================================
+  // 11. SCROLL PROGRESS BAR (RAF THROTTLED)
+  // =========================================================================
+  const scrollProgress = document.getElementById('scroll-progress');
+  if (scrollProgress) {
+    let progressTicking = false;
+
+    function updateProgress() {
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      const ratio = scrollable > 0 ? Math.min(window.scrollY / scrollable, 1) : 0;
+      scrollProgress.style.transform = `scaleX(${ratio})`;
+      progressTicking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if (!progressTicking) {
+        requestAnimationFrame(updateProgress);
+        progressTicking = true;
+      }
+    }, { passive: true });
+
+    window.addEventListener('resize', updateProgress);
+    updateProgress();
+  }
+
+  // =========================================================================
+  // 12. SCROLL REVEAL ANIMATIONS (added here so no-JS users see all content)
+  // =========================================================================
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const revealTargets = document.querySelectorAll(
+    '.section-title-wrap, .about-card, .skills-cat-card, .project-card, ' +
+    '.terminal-container, .contact-details-card, .contact-form-card'
+  );
+
+  if (revealTargets.length && 'IntersectionObserver' in window && !prefersReducedMotion) {
+    revealTargets.forEach((el) => el.classList.add('reveal'));
+
+    const revealObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Stagger siblings sharing the same parent grid for a cascade effect
+            const siblings = Array.from(entry.target.parentElement.children)
+              .filter((c) => c.classList.contains('reveal'));
+            const idx = siblings.indexOf(entry.target);
+            entry.target.style.setProperty('--reveal-delay', `${Math.min(idx, 4) * 0.08}s`);
+            entry.target.classList.add('in-view');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+    );
+
+    revealTargets.forEach((el) => revealObserver.observe(el));
+  }
+
+  // =========================================================================
+  // 13. CURSOR-FOLLOW SPOTLIGHT ON GLASS CARDS (fine pointers only)
+  // =========================================================================
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (finePointer) {
+    const spotlightCards = document.querySelectorAll(
+      '.about-card, .skills-cat-card, .project-card, .contact-details-card, .contact-form-card'
+    );
+    spotlightCards.forEach((card) => {
+      card.classList.add('card-spotlight');
+      card.addEventListener('pointermove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        card.style.setProperty('--mx', `${x}%`);
+        card.style.setProperty('--my', `${y}%`);
+      });
+    });
+  }
 });
