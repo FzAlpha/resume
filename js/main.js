@@ -744,4 +744,73 @@ Discord: <span class="highlight-crimson">fz_alpha_1</span>
       });
     });
   }
+
+  // =========================================================================
+  // 14. DEPTH SCROLL ENGINE ("GO INWARDS" — sections recede into 3D space)
+  //     JS-driven so it works in every browser (no scroll-timeline needed).
+  //     Each section's content plane dives toward a shared vanishing point
+  //     as it enters/leaves the viewport, resting crisp while being read.
+  // =========================================================================
+  if (!prefersReducedMotion) {
+    const depthTargets = Array.from(document.querySelectorAll('main > section > .container'));
+
+    if (depthTargets.length) {
+      depthTargets.forEach((el) => el.classList.add('depth-layer'));
+
+      const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+      let depthTicking = false;
+
+      function applyDepth() {
+        const vh = window.innerHeight || document.documentElement.clientHeight;
+        const zone = vh * 0.6; // length of the enter / exit transition band
+
+        for (let i = 0; i < depthTargets.length; i++) {
+          const el = depthTargets[i];
+          const rect = el.getBoundingClientRect();
+
+          // Skip elements that are nowhere near the viewport (cheap early-out)
+          if (rect.bottom < -vh || rect.top > vh * 2) continue;
+
+          // "presence" = how settled the plane is (1 = resting, 0 = far away)
+          const enter = (vh - rect.top) / zone;    // grows as the top scrolls up
+          const exit = rect.bottom / zone;          // shrinks as the bottom leaves
+          const presence = clamp(Math.min(enter, exit), 0, 1);
+          const depth = 1 - presence;               // 0 near center, 1 far
+
+          if (depth < 0.001) {
+            el.style.transform = 'none';
+            el.style.opacity = '1';
+            continue;
+          }
+
+          // Direction: content above the viewport centre rises as it recedes,
+          // content below sinks slightly — reinforcing the dive.
+          const center = rect.top + rect.height / 2;
+          const dir = center < vh / 2 ? -1 : 1;
+
+          const scale = 1 - depth * 0.09;           // 1 -> 0.91
+          const tz = -depth * 180;                  // 0 -> -180px (inward)
+          const ty = dir * depth * 18;              // gentle vertical drift
+          const opacity = 1 - depth * 0.6;          // 1 -> 0.4
+
+          el.style.transform =
+            `perspective(1500px) translate3d(0, ${ty.toFixed(1)}px, ${tz.toFixed(1)}px) scale(${scale.toFixed(4)})`;
+          el.style.opacity = opacity.toFixed(3);
+        }
+        depthTicking = false;
+      }
+
+      function onDepthScroll() {
+        if (!depthTicking) {
+          requestAnimationFrame(applyDepth);
+          depthTicking = true;
+        }
+      }
+
+      window.addEventListener('scroll', onDepthScroll, { passive: true });
+      window.addEventListener('resize', onDepthScroll);
+      window.addEventListener('load', onDepthScroll);
+      applyDepth();
+    }
+  }
 });

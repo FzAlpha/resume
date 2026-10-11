@@ -2658,3 +2658,91 @@ img {
     font-size: 0.22rem;
   }
 }
+
+/* ==========================================================================
+   DEPTH SCROLL ENGINE ("Go Inwards" — sections recede into 3D space)
+   Transforms are driven by JS (js/main.js §14) for full cross-browser
+   support (Chrome, Firefox, Safari). Base styles only live here.
+   ========================================================================== */
+.depth-layer {
+  transform-origin: 50% 45%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+
+/* The scene wrapper keeps a shared vanishing point so every section
+   appears to dive toward the same depth point. */
+main {
+  perspective: 1500px;
+  perspective-origin: 50% 50%;
+}
+
+/* No transform jank for users who opt out of motion */
+@media (prefers-reduced-motion: reduce) {
+  .depth-layer {
+    transform: none !important;
+    opacity: 1 !important;
+    will-change: auto;
+  }
+  main {
+    perspective: none;
+  }
+}
+
+/* ==========================================================================
+   VISUAL POLISH UPGRADES
+   ========================================================================== */
+
+/* Ambient aurora glow that breathes behind the whole page (very subtle) */
+.aurora-field {
+  position: fixed;
+  inset: -20% -10% auto -10%;
+  height: 70vh;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(40rem 30rem at 18% 12%, rgba(37, 99, 235, 0.18), transparent 60%),
+    radial-gradient(34rem 28rem at 85% 8%, rgba(96, 165, 250, 0.14), transparent 62%);
+  filter: blur(1rem);
+  opacity: 0.9;
+  animation: auroraDrift 18s ease-in-out infinite alternate;
+}
+
+[data-theme="light"] .aurora-field {
+  background:
+    radial-gradient(40rem 30rem at 18% 12%, rgba(37, 99, 235, 0.12), transparent 60%),
+    radial-gradient(34rem 28rem at 85% 8%, rgba(37, 99, 235, 0.08), transparent 62%);
+  opacity: 0.8;
+}
+
+@keyframes auroraDrift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(2%, 1.5%, 0) scale(1.06); }
+  100% { transform: translate3d(-1.5%, 0.5%, 0) scale(1.02); }
+}
+
+/* Refined focus-visible ring for keyboard users across interactive controls */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+.nav-item:focus-visible,
+.skill-tag:focus-visible {
+  outline: 0.125rem solid var(--accent-crimson-hover);
+  outline-offset: 0.1875rem;
+  border-radius: var(--radius-sm);
+}
+
+/* Give the hero photo a touch more presence on larger screens */
+@media (min-width: 64.0625rem) {
+  .polygon-glow-layer {
+    filter: blur(1.75rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-field {
+    animation: none;
+  }
+}
