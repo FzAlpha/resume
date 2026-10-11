@@ -1,6 +1,8 @@
 /* ==========================================================================
-   HRITABRATA BARDHAN - MINIMALIST BLACK & CRIMSON PORTFOLIO
-   Design Theme: Pitch Black, Liquid Glass Panels (macOS Style), Plexus Canvas
+   HRITABRATA BARDHAN - MINIMALIST PORTFOLIO (CYBER BLUE ACCENT)
+   Design Theme: Deep Black, Liquid Glass Panels (macOS Style), Plexus Canvas
+   NOTE: legacy "crimson" naming (--accent-crimson, .btn-crimson, etc.) is
+   kept for compatibility; the actual accent colour is blue (#2563eb).
    Typography Palette: Outfit (Display & Hero), Space Grotesk (Titles),
                        Plus Jakarta Sans (UI), Inter (Body),
                        JetBrains Mono (Code), Space Mono (Metrics)
@@ -79,9 +81,6 @@
   /* Dark Theme (Default) */
   --bg-main: #0a0a0c;
   --bg-surface: rgba(16, 16, 22, 0.72);
-  --bg-surface-hover: rgba(24, 24, 34, 0.85);
-  --bg-card: rgba(255, 255, 255, 0.035);
-  --bg-elevated: rgba(22, 22, 30, 0.85);
 
   /* macOS Clear Liquid Glass Tokens (Dynamic Units) */
   --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0.05) 100%);
@@ -96,10 +95,9 @@
   --micro-glass-border: rgba(255, 255, 255, 0.12);
   --micro-glass-shadow: inset 0 0.0625rem 0.0625rem rgba(255, 255, 255, 0.25);
 
-  /* Crimson Accent Tokens */
+  /* Accent Tokens (blue; "crimson" names kept for compatibility) */
   --accent-crimson: #2563eb;
   --accent-crimson-hover: #3b82f6;
-  --accent-crimson-dark: #1d4ed8;
   --accent-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   --accent-glow: rgba(37, 99, 235, 0.4);
   --accent-glow-subtle: rgba(37, 99, 235, 0.15);
@@ -112,12 +110,6 @@
   /* Borders */
   --border-subtle: rgba(255, 255, 255, 0.12);
   --border-hover: rgba(37, 99, 235, 0.55);
-  --border-active: #2563eb;
-
-  /* Plexus Canvas Colors */
-  --plexus-node: rgba(255, 255, 255, 0.75);
-  --plexus-line: rgba(255, 255, 255, 0.08);
-  --plexus-tri: rgba(255, 255, 255, 0.025);
 
   /* Developer Doodle Imprint Wallpaper */
   --doodle-pattern: url('../assets/images/doodle-pattern-dark.svg');
@@ -131,14 +123,12 @@
   --font-body: 'Comic Relief', 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-num: 'Space Mono', 'JetBrains Mono', monospace;
   --font-code: 'JetBrains Mono', 'Fira Code', monospace;
-  --font-main: var(--font-body);
 
   /* Fluid Layout & Dynamic Radii */
   --nav-height: clamp(3.75rem, 6dvh, 4.75rem);
   --max-width: min(92vw, 84rem);
   --radius-sm: 0.5rem;
   --radius-md: 0.875rem;
-  --radius-lg: 1.25rem;
   --radius-full: 9999rem;
 
   --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -149,9 +139,6 @@
 [data-theme="light"] {
   --bg-main: #edf0f6;
   --bg-surface: rgba(255, 255, 255, 0.45);
-  --bg-surface-hover: rgba(255, 255, 255, 0.68);
-  --bg-card: rgba(255, 255, 255, 0.38);
-  --bg-elevated: rgba(255, 255, 255, 0.85);
 
   /* macOS Clear Liquid Translucent Glass (Light Theme) */
   --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0.22) 50%, rgba(255, 255, 255, 0.42) 100%);
@@ -172,10 +159,6 @@
 
   --border-subtle: rgba(0, 0, 0, 0.06);
   --border-hover: rgba(37, 99, 235, 0.45);
-
-  --plexus-node: rgba(37, 99, 235, 0.75);
-  --plexus-line: rgba(37, 99, 235, 0.16);
-  --plexus-tri: rgba(37, 99, 235, 0.04);
 
   /* Doodle Imprint Wallpaper (Light) */
   --doodle-pattern: url('../assets/images/doodle-pattern-light.svg');
@@ -280,7 +263,6 @@ h6 {
 .terminal-container,
 .terminal-screen,
 .term-input,
-.term-prompt,
 .term-title,
 .term-hint,
 .code-sub {

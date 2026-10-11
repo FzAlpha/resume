@@ -1,5 +1,5 @@
 /**
- * HRITABRATA BARDHAN - MINIMALIST BLACK & CRIMSON PORTFOLIO ENGINE
+ * HRITABRATA BARDHAN - MINIMALIST PORTFOLIO ENGINE (CYBER BLUE ACCENT)
  * Includes: Interactive Plexus Mesh Canvas (Retina & Mobile Optimized),
  * Typewriter Engine, Theme Switcher (Dark/Light), Scrollspy with RAF throttling,
  * Interactive Terminal, Toast Notifications, Copy Triggers, and Modal/Drawer Controllers.
